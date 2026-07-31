@@ -22,7 +22,7 @@ import os
 import time as time_module
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV, RandomizedSearchCV
-from sklearn.metrics import accuracy_score, classification_report, make_scorer, matthews_corrcoef
+from sklearn.metrics import accuracy_score, classification_report, make_scorer, f1_score
 from sklearn.inspection import permutation_importance
 
 print("NumPy version:", np.__version__)
@@ -34,7 +34,7 @@ def rf_model_building(X_train, X_test, y_train, y_test, model_name, output_dir, 
     try:
         rf = RandomForestClassifier(random_state=42, n_jobs=-1, oob_score=True, class_weight="balanced")
         KFCV = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-        mcc = make_scorer(matthews_corrcoef)
+        f1 = make_scorer(f1_score)
 
         random_search_grid = {
             "n_estimators": list(range(1000, 1200, 50)),
@@ -45,12 +45,12 @@ def rf_model_building(X_train, X_test, y_train, y_test, model_name, output_dir, 
         }
 
         random_search = RandomizedSearchCV(estimator=rf, param_distributions=random_search_grid, n_iter=50,
-                                          cv=KFCV, scoring=mcc, n_jobs=-1, random_state=42, return_train_score=True)
+                                          cv=KFCV, scoring=f1, n_jobs=-1, random_state=42, return_train_score=True)
         start = time_module.time()
         random_search.fit(X_train, y_train)
         print(f"Random search for {model_name} took {time_module.time() - start:.2f} seconds")
         print(f"Best parameters from random search: {random_search.best_params_}")
-        print(f"Best MCC score from random search: {random_search.best_score_:.4f}")
+        print(f"Best F1 score from random search: {random_search.best_score_:.4f}")
 
         random_search_results = pd.DataFrame(random_search.cv_results_)
         random_search_output = os.path.join(output_dir, f"parameters_randomsearchcv_{model_name}.tsv")
@@ -65,7 +65,7 @@ def rf_model_building(X_train, X_test, y_train, y_test, model_name, output_dir, 
             "class_weight": [best_params_random["class_weight"]]
         }
 
-        grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=KFCV, scoring=mcc, n_jobs=-1)
+        grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=KFCV, scoring=f1, n_jobs=-1)
         start = time_module.time()
         grid_search.fit(X_train, y_train)
         print(f"Grid search for {model_name} took {time_module.time() - start:.2f} seconds")
@@ -80,7 +80,9 @@ def rf_model_building(X_train, X_test, y_train, y_test, model_name, output_dir, 
 
         predictions = best_model.predict(X_test)
         test_accuracy = accuracy_score(y_test, predictions)
+        test_f1 = f1_score(y_test, predictions)
         print(f"Test accuracy for {model_name}: {test_accuracy:.4f}")
+        print(f"Test F1 score for {model_name}: {test_f1:.4f}")
         print(f"Classification report for {model_name}:\n{classification_report(y_test, predictions)}")
 
         return best_model
@@ -210,8 +212,6 @@ def process_prevalence_file(filename):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Run RF classification pipeline on prevalence-filtered bacterial OTU data, "
-                     "including all-features, RFECV, Lasso, and Permutation Importance feature "
-                     "selection. The input filename is supplied via the terminal at runtime; "
                      "model training was performed as an HTCondor job with 32 CPU cores and "
                      "272 GB RAM."
     )
