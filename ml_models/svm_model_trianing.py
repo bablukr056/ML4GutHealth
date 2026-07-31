@@ -22,7 +22,7 @@ import os
 import time as time_module
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split, StratifiedKFold
-from sklearn.metrics import accuracy_score, classification_report, make_scorer, matthews_corrcoef
+from sklearn.metrics import accuracy_score, classification_report, make_scorer, f1_score
 from sklearn.feature_selection import RFECV
 from dask_ml.model_selection import RandomizedSearchCV, GridSearchCV
 
@@ -35,7 +35,7 @@ def svm_model_building(X_train, X_test, y_train, y_test, model_name, kernel, out
     try:
         svm = SVC(class_weight="balanced")
         KFCV = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-        mcc = make_scorer(matthews_corrcoef)
+        f1 = make_scorer(f1_score)
 
         if kernel == 'rbf':
             param_dist_random = {
@@ -51,7 +51,7 @@ def svm_model_building(X_train, X_test, y_train, y_test, model_name, kernel, out
         else:
             raise ValueError(f"Unsupported kernel: {kernel}")
 
-        random_search = RandomizedSearchCV(svm, param_distributions=param_dist_random, n_iter=50, cv=KFCV, scoring=mcc, n_jobs=-1, random_state=42)
+        random_search = RandomizedSearchCV(svm, param_distributions=param_dist_random, n_iter=50, cv=KFCV, scoring=f1, n_jobs=-1, random_state=42)
         start = time_module.time()
         random_search.fit(X_train, y_train)
         print(f"Random search for {model_name} ({kernel} kernel) took {time_module.time() - start:.2f} seconds")
@@ -79,7 +79,7 @@ def svm_model_building(X_train, X_test, y_train, y_test, model_name, kernel, out
                 'kernel': ['linear']
             }
 
-        grid_search = GridSearchCV(svm, param_grid, cv=KFCV, scoring=mcc, n_jobs=-1)
+        grid_search = GridSearchCV(svm, param_grid, cv=KFCV, scoring=f1, n_jobs=-1)
         start = time_module.time()
         grid_search.fit(X_train, y_train)
         print(f"Grid search for {model_name} ({kernel} kernel) took {time_module.time() - start:.2f} seconds")
@@ -94,7 +94,9 @@ def svm_model_building(X_train, X_test, y_train, y_test, model_name, kernel, out
 
         predictions = best_model.predict(X_test)
         test_accuracy = accuracy_score(y_test, predictions)
+        test_f1 = f1_score(y_test, predictions)
         print(f"Test accuracy for {model_name} ({kernel} kernel): {test_accuracy:.4f}")
+        print(f"Test F1 score for {model_name} ({kernel} kernel): {test_f1:.4f}")
         print(f"Classification report for {model_name} ({kernel} kernel):\n{classification_report(y_test, predictions)}")
 
         return best_model
@@ -156,11 +158,11 @@ def process_prevalence_file(filename):
             print("\nStarting RFECV feature selection using linear SVM model...")
             SVM_LINEAR = joblib.load(linear_model_path)
 
-            mcc_scorer = make_scorer(matthews_corrcoef)
+            f1_scorer = make_scorer(f1_score)
             cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
             start_time = time_module.time()
-            rfecv = RFECV(estimator=SVM_LINEAR, step=1, cv=cv, scoring=mcc_scorer, n_jobs=-1, verbose=1)
+            rfecv = RFECV(estimator=SVM_LINEAR, step=1, cv=cv, scoring=f1_scorer, n_jobs=-1, verbose=1)
             rfecv.fit(X_train, y_train)  # Use train data for feature selection
             end_time = time_module.time()
             print(f"Time taken for RFECV: {end_time - start_time:.2f} seconds")
@@ -249,7 +251,10 @@ def process_prevalence_file(filename):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Run SVM classification pipeline with RBF and Linear kernels  ")
+        description="Run SVM classification pipeline with RBF and Linear kernels on "
+                     "prevalence-filtered bacterial OTU data, including all-features, RFECV, "
+                     "Lasso, and Permutation Importance feature selection."
+    )
     parser.add_argument("filename", help="Filename inside the prevalence_based_threshold directory, supplied from the terminal at runtime.")
     args = parser.parse_args()
 
