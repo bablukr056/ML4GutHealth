@@ -4,7 +4,7 @@
 # Random Forest classifier training on prevalence-filtered, CLR-transformed
 # species-level abundance data, comparing four feature-selection strategies:
 # all-features, permutation importance, RFECV, and Lasso.
-#
+# python rf_model_training.py clr_otu_metadata_merged_prevalence_bacterial_20pct.tsv
 # The input filename (a prevalence-threshold-specific merged OTU/metadata
 # python rf_model_training.py clr_otu_metadata_merged_prevalence_bacterial_20pct.tsv
 # file) is supplied as a command-line argument at runtime. Model training,
