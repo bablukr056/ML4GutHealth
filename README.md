@@ -35,7 +35,7 @@ ML4GutHealth/
 
 ## Pipeline Overview
 
-*(pipeline diagram to be added)*
+![Pipeline Overview](https://raw.githubusercontent.com/bablukr056/ML4GutHealth/main/Figure_1.jpeg)
 
 ---
 
