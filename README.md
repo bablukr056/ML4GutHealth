@@ -27,7 +27,6 @@ ML4GutHealth/
 ├── R_Code_Analysis/            # Batch correction, diversity analyses, and figure-generation scripts (R)
 ├── ml_model_training_codes/    # Model training scripts (Random Forest, SVM, Logistic Regression ElasticNet)
 ├── Manuscript_Figures/         # Main text and supplementary figures
-└── Submission_Code/            # Code accompanying the manuscript submission
 ```
 
 ---
