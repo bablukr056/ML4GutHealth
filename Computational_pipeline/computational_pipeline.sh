@@ -25,7 +25,7 @@
 #   submission of the pipeline across all samples as independent Condor
 #   jobs.
 # CPU and memory resources were allocated per job in the Condor submission file.
-# 32 CPU cores and 272 GB of memory were requested for each job, which is sufficient for the computationally intensive steps of the pipeline (Bowtie2, Kraken2, Bracken).
+# 4 CPU cores and 128 GB of memory were requested for each job (or each samples), which is sufficient for the computationally intensive steps of the pipeline (Bowtie2, Kraken2, Bracken).
 #
 set -uo pipefail
 
