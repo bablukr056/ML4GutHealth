@@ -33,7 +33,7 @@ ML4GutHealth/
 
 ## Pipeline Overview
 
-![Pipeline Overview](https://raw.githubusercontent.com/bablukr056/ML4GutHealth/main/Figure_1.jpeg)
+![Pipeline Overview](Figure_1.jpeg)
 ---
 
 ## Citation
