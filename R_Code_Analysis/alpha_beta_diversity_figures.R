@@ -5,7 +5,7 @@
 # summary tables of alpha diversity
 # ============================================================
 
-setwd("/Users/bablu/Library/CloudStorage/OneDrive-UniversitàdegliStudidiMilano/CODE/Thesis_Figures_R")
+setwd("/Users/bablu/Library/CloudStorage/OneDrive-UniversitàdegliStudidiMilano/CODE/")
 
 # ============================================================
 # PART 1: Beta diversity — PCoA (Aitchison distance)
