@@ -8,4 +8,4 @@ This folder contains the following files:
 5. `corrected_training_7452.csv.bz2`: species-level OTU feature table for the 7452-sample training set, after MMUPHin batch correction;
 6. `without_corrected_validation_OTU_642_samples.csv.bz2`: species-level OTU feature table for the 642-sample validation set, without batch correction applied;
 7. `corrected_corrected_validation_OTU_642_samples.csv.bz2`: species-level OTU feature table for the 642-sample validation set, after MMUPHin batch correction;
-8. `batch_effect_analysis.ipynb`: notebook comparing corrected vs. uncorrected feature tables to assess batch effects across studies.
+8. `plot_pcoa_batch_correction_comparison.R`: R script that generates a 4-panel PCoA plot (training and validation sets, before vs. after batch correction) from the HPC-exported PCoA coordinates and variance-explained files, and exports the final figure as PNG, PDF, and TIFF. Available here: https://github.com/bablukr056/ML4GutHealth/blob/main/R_Code_Analysis/plot_pcoa_batch_correction_comparison.R
