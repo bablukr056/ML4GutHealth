@@ -37,7 +37,7 @@ ML4GutHealth/
 ---
 
 ## Citation
-
+---
 Kumar B, Lorusso E, Fosso B and Pesole G (2026) A data-driven universal gut microbiome health assessment: a machine learning framework trained on large metagenomic data. Front. Microbiol. 17:1925500. doi: 10.3389/fmicb.2026.1925500
 ---
 
